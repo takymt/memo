@@ -1,6 +1,6 @@
 [tools]
 go = '1.26'
-golangci-lint = 'latest'
+golangci-lint = '2.9.0'
 
 [tasks.fmt]
 run = 'gofmt -w ./cmd ./internal'
