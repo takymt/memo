@@ -14,5 +14,8 @@ run = 'go test ./...'
 [tasks.build]
 run = 'go build ./cmd/memo'
 
+[tasks.bump]
+run = 'scripts/bump.sh'
+
 [tasks.all]
 depends = ['fmt', 'lint', 'test', 'build']
