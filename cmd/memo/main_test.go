@@ -81,3 +81,25 @@ func TestRunListTodayAndWeek(t *testing.T) {
 		t.Fatalf("unexpected old file in week output: %s", weekOut)
 	}
 }
+
+func TestRunCreateReturnsErrorWhenFileExists(t *testing.T) {
+	tempDir := t.TempDir()
+	configPath := filepath.Join(t.TempDir(), "config.json")
+	if err := memo.SaveConfig(configPath, memo.Config{MemoDir: tempDir}); err != nil {
+		t.Fatal(err)
+	}
+
+	description := "買い物メモ"
+	firstErr := runCreate(configPath, description)
+	if firstErr != nil {
+		t.Fatalf("first create failed: %v", firstErr)
+	}
+
+	secondErr := runCreate(configPath, description)
+	if secondErr == nil {
+		t.Fatal("expected duplicate create to fail")
+	}
+	if !strings.Contains(secondErr.Error(), "memo already exists") {
+		t.Fatalf("unexpected error: %v", secondErr)
+	}
+}

@@ -100,7 +100,20 @@ func runCreate(configPath, description string) error {
 	fullPath := filepath.Join(cfg.MemoDir, fileName)
 
 	content := fmt.Sprintf("# %s\n\n", description)
-	if err := os.WriteFile(fullPath, []byte(content), 0o644); err != nil {
+	f, err := os.OpenFile(fullPath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o644)
+	if err != nil {
+		if os.IsExist(err) {
+			return fmt.Errorf("memo already exists: %s", fullPath)
+		}
+		return err
+	}
+	defer func() {
+		if closeErr := f.Close(); err == nil && closeErr != nil {
+			err = closeErr
+		}
+	}()
+
+	if _, err := f.WriteString(content); err != nil {
 		return err
 	}
 
