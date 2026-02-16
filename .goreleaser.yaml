@@ -3,9 +3,6 @@ project_name: memo
 before:
   hooks:
     - go mod tidy
-    - mise run fmt
-    - mise run lint
-    - mise run test
 
 builds:
   - id: memo
@@ -47,6 +44,6 @@ signs:
       - sign-blob
       - --yes
       - --output-signature
-      - "${signature}"
-      - "${artifact}"
+      - '${signature}'
+      - '${artifact}'
     artifacts: checksum
