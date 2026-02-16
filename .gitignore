@@ -6,7 +6,7 @@
 *.dylib
 
 # Local build outputs
-memo
+/memo
 dist/
 
 # Test binary, built with `go test -c`

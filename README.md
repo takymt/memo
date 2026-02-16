@@ -34,7 +34,15 @@ memo search bmk
 
 Performs simple fuzzy matching (in-order character match) against memo file names.
 
-### 4) Show revision
+### 4) Open a memo
+
+```bash
+memo open bmk
+```
+
+Finds the best fuzzy match and opens it in `$EDITOR` (`vi` fallback).
+
+### 5) Show revision
 
 ```bash
 memo version
