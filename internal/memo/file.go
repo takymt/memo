@@ -5,14 +5,20 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode"
 )
 
-var nonFileChar = regexp.MustCompile(`[^a-zA-Z0-9_-]+`)
+var separatorPattern = regexp.MustCompile(`[\s　]+`)
 
 func FileNameFromDescription(description string) string {
 	d := strings.TrimSpace(description)
-	d = strings.ReplaceAll(d, " ", "_")
-	d = nonFileChar.ReplaceAllString(d, "")
+	d = separatorPattern.ReplaceAllString(d, "_")
+	d = strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' || r == '-' {
+			return r
+		}
+		return -1
+	}, d)
 	if d == "" {
 		d = "memo"
 	}

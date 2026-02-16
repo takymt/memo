@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"unicode/utf8"
 )
 
 func SearchByFileName(dir, query string) ([]string, error) {
@@ -40,11 +41,20 @@ func SearchByFileName(dir, query string) ([]string, error) {
 }
 
 func fuzzyContains(text, pattern string) bool {
+	textRunes := []rune(text)
+	patternRunes := []rune(pattern)
+	if len(patternRunes) == 0 {
+		return true
+	}
+	if !utf8.ValidString(text) || !utf8.ValidString(pattern) {
+		return false
+	}
+
 	j := 0
-	for i := 0; i < len(text) && j < len(pattern); i++ {
-		if text[i] == pattern[j] {
+	for i := 0; i < len(textRunes) && j < len(patternRunes); i++ {
+		if textRunes[i] == patternRunes[j] {
 			j++
 		}
 	}
-	return j == len(pattern)
+	return j == len(patternRunes)
 }

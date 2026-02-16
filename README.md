@@ -7,6 +7,7 @@ A Go-based CLI for writing ideas down immediately.
 - Single binary written in Go
 - One-step memo creation with `memo <description>`
 - File name format: `yyyymmdd_<description>.md`
+- Unicode (Japanese, etc.) is supported in memo titles and search
 
 ## Usage
 
