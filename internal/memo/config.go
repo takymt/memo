@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Config struct {
@@ -16,6 +17,19 @@ func DefaultConfigPath() (string, error) {
 		return "", err
 	}
 	return filepath.Join(home, ".memo", "config.json"), nil
+}
+
+func DefaultMemoDir() (string, error) {
+	xdgDataHome := strings.TrimSpace(os.Getenv("XDG_DATA_HOME"))
+	if xdgDataHome != "" {
+		return filepath.Join(xdgDataHome, "memo"), nil
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, ".local", "share", "memo"), nil
 }
 
 func SaveConfig(path string, cfg Config) error {
@@ -33,11 +47,11 @@ func LoadOrDefaultConfig(path string) (Config, error) {
 	body, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			cwd, e := os.Getwd()
+			memoDir, e := DefaultMemoDir()
 			if e != nil {
 				return Config{}, e
 			}
-			return Config{MemoDir: cwd}, nil
+			return Config{MemoDir: memoDir}, nil
 		}
 		return Config{}, err
 	}
@@ -47,11 +61,11 @@ func LoadOrDefaultConfig(path string) (Config, error) {
 		return Config{}, err
 	}
 	if cfg.MemoDir == "" {
-		cwd, err := os.Getwd()
+		memoDir, err := DefaultMemoDir()
 		if err != nil {
 			return Config{}, err
 		}
-		cfg.MemoDir = cwd
+		cfg.MemoDir = memoDir
 	}
 	return cfg, nil
 }

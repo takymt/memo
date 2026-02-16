@@ -17,6 +17,8 @@ memo init
 ```
 
 Configure memo directory interactively. If left empty, current working directory is used.
+Configure memo directory interactively. If left empty, XDG data path is used:
+`$XDG_DATA_HOME/memo` (fallback: `~/.local/share/memo`).
 
 ### 2) Create a memo
 
@@ -49,6 +51,15 @@ memo version
 ```
 
 Prints the embedded revision value.
+
+### 6) List recent memos
+
+```bash
+memo list --today
+memo list --week
+```
+
+Prints memo file paths created today or within the last 7 days.
 
 ## Development
 

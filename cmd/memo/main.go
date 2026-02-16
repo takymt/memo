@@ -59,18 +59,18 @@ func run(args []string) error {
 }
 
 func runInit(configPath string) error {
-	cwd, err := os.Getwd()
+	defaultMemoDir, err := memo.DefaultMemoDir()
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("memo directory [%s]: ", cwd)
+	fmt.Printf("memo directory [%s]: ", defaultMemoDir)
 	var input string
 	if _, err := fmt.Scanln(&input); err != nil {
 		input = ""
 	}
 	if strings.TrimSpace(input) == "" {
-		input = cwd
+		input = defaultMemoDir
 	}
 
 	if err := os.MkdirAll(input, 0o755); err != nil {
