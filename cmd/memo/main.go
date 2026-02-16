@@ -6,7 +6,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
 	"strings"
+	"time"
 
 	"github.com/takymt/memo/internal/memo"
 )
@@ -48,6 +50,8 @@ func run(args []string) error {
 	case "version":
 		fmt.Printf("revision: %s\n", revision)
 		return nil
+	case "list":
+		return runList(configPath, args[1:])
 	default:
 		description := strings.Join(args, " ")
 		return runCreate(configPath, description)
@@ -147,4 +151,63 @@ func runOpen(configPath, query string) error {
 	command.Stdout = os.Stdout
 	command.Stderr = os.Stderr
 	return command.Run()
+}
+
+func runList(configPath string, args []string) error {
+	if len(args) != 1 {
+		return errors.New("usage: memo list --today|--week")
+	}
+
+	cfg, err := memo.LoadOrDefaultConfig(configPath)
+	if err != nil {
+		return err
+	}
+
+	entries, err := os.ReadDir(cfg.MemoDir)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+
+	now := time.Now()
+	today := now.Format("20060102")
+	weekStart := now.AddDate(0, 0, -6).Format("20060102")
+
+	var result []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+
+		name := entry.Name()
+		if !strings.HasSuffix(name, ".md") || len(name) < len("20060102_.md") {
+			continue
+		}
+
+		datePart := name[:8]
+		if datePart < weekStart || datePart > today {
+			continue
+		}
+
+		switch args[0] {
+		case "--today":
+			if datePart != today {
+				continue
+			}
+		case "--week":
+		default:
+			return errors.New("usage: memo list --today|--week")
+		}
+
+		result = append(result, filepath.Join(cfg.MemoDir, name))
+	}
+
+	sort.Strings(result)
+	for _, path := range result {
+		fmt.Println(path)
+	}
+
+	return nil
 }
