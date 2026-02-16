@@ -1,0 +1,18 @@
+[tools]
+go = '1.26'
+golangci-lint = 'latest'
+
+[tasks.fmt]
+run = 'gofmt -w ./cmd ./internal'
+
+[tasks.lint]
+run = 'golangci-lint run ./...'
+
+[tasks.test]
+run = 'go test ./...'
+
+[tasks.build]
+run = 'go build ./cmd/memo'
+
+[tasks.all]
+depends = ['fmt', 'lint', 'test', 'build']

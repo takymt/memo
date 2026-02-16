@@ -1,0 +1,52 @@
+project_name: memo
+
+before:
+  hooks:
+    - go mod tidy
+    - mise run fmt
+    - mise run lint
+    - mise run test
+
+builds:
+  - id: memo
+    main: ./cmd/memo
+    binary: memo
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.revision={{ .ShortCommit }}
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- .Version }}_
+      {{- .Os }}_
+      {{- .Arch }}
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  use: git
+
+sboms:
+  - artifacts: archive
+
+signs:
+  - cmd: cosign
+    args:
+      - sign-blob
+      - --yes
+      - --output-signature
+      - "${signature}"
+      - "${artifact}"
+    artifacts: checksum
